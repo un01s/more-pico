@@ -8,16 +8,6 @@ project(pico-ws2812p)
 # Initialize the Pico SDK
 pico_sdk_init()
 
-# Add your executable and source files
-# use main.cpp for hello-pico
-#add_executable(pico-ws2812p
-#    main.cpp
-#)
-
-# Enable USB stdio and disable UART stdio
-#pico_enable_stdio_usb(pico-ws2812p 1)
-#pico_enable_stdio_uart(pico-ws2812p 0)
-
 # pico-ws2812p
 add_executable(pico-ws2812p)
 
