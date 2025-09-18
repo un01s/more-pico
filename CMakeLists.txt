@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 
+#set(CMAKE_C_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 11)
+
 # Include the Pico SDK initialization script
 include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
 
-project(pico-ws2812p)
+project(pico-ws2812p C CXX ASM)
 
 # Initialize the Pico SDK
 pico_sdk_init()
@@ -17,9 +20,11 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated)
 pico_generate_pio_header(pico-ws2812p ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
 target_sources(pico-ws2812p PRIVATE ws2812_parallel.c)
+#target_sources(pico-ws2812p PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.c)
 
 # Link the Pico SDK to your project
 target_link_libraries(pico-ws2812p pico_stdlib hardware_pio hardware_dma)
+#target_link_libraries(pico-ws2812p pico_stdlib pico_multicore pico_mem_ops hardware_pio hardware_dma)
 
 pico_add_extra_outputs(pico-ws2812p)
 
