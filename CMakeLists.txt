@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.13)
+
+#set(CMAKE_C_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 11)
+
+# Include the Pico SDK initialization script
+include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
+
+project(pico-ws2812p C CXX ASM)
+
+# Initialize the Pico SDK
+pico_sdk_init()
+
+# pico-ws2812p
+add_executable(pico-ws2812p)
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated)
+
+# generate the header file into the source tree as it is included in the RP2040 datasheet
+pico_generate_pio_header(pico-ws2812p ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
+
+target_sources(pico-ws2812p PRIVATE ws2812_parallel.c)
+#target_sources(pico-ws2812p PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.c)
+
+# Link the Pico SDK to your project
+target_link_libraries(pico-ws2812p pico_stdlib hardware_pio hardware_dma)
+#target_link_libraries(pico-ws2812p pico_stdlib pico_multicore pico_mem_ops hardware_pio hardware_dma)
+
+pico_add_extra_outputs(pico-ws2812p)
+
+# Additionally generate python and hex pioasm outputs for inclusion in the RP2040 datasheet
+add_custom_target(pio_ws2812_datasheet DEPENDS ${CMAKE_CURRENT_LIST_DIR}/generated/ws2812.py)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_LIST_DIR}/generated/ws2812.py
+        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio
+        COMMAND pioasm -o python ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio ${CMAKE_CURRENT_LIST_DIR}/generated/ws2812.py
+        VERBATIM)
+add_dependencies(pico-ws2812p pio_ws2812_datasheet)
+
+# Create map/bin/hex/uf2 files
+pico_add_extra_outputs(pico-ws2812p)
